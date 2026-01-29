@@ -4,7 +4,6 @@ import { Session } from '../types';
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVKCSfYOC7DSloMm-sslEnuPii5UBSJIaBDWmNl9P5MtNW6F33BbX5dBmGtCX-vn8m5g/exec';
 
 export const fetchSessions = async (): Promise<Session[]> => {
-    if (GOOGLE_SCRIPT_URL.includes('AKfycbyVKCSfYOC7DSloMm-sslEnuPii5UBSJIaBDWmNl9P5MtNW6F33BbX5dBmGtCX-vn8m5g')) return [];
     try {
         const response = await fetch(GOOGLE_SCRIPT_URL);
         if (!response.ok) throw new Error('Network response was not ok');
@@ -28,10 +27,7 @@ export const removeSession = async (id: string): Promise<Session[]> => {
 };
 
 async function sendRequest(action: string, payload: any): Promise<Session[]> {
-    if (GOOGLE_SCRIPT_URL.includes('AKfycbyVKCSfYOC7DSloMm-sslEnuPii5UBSJIaBDWmNl9P5MtNW6F33BbX5dBmGtCX-vn8m5g')) {
-        alert("Please configure your Google Sheet URL in services/googleSheetsService.ts");
-        return [];
-    }
+    // Check removed as URL is configured
 
     // Google Apps Script requires text/plain for CORS text
     const response = await fetch(GOOGLE_SCRIPT_URL, {
