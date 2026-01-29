@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Session, SessionStatus } from '../types';
-import { ChevronLeft, ChevronRight, Clock, DollarSign, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, DollarSign } from 'lucide-react';
 
 interface CalendarViewProps {
   sessions: Session[];
@@ -57,6 +57,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ sessions }) => {
       const dateObj = new Date(year, month, day);
       const isToday = new Date().toDateString() === dateObj.toDateString();
       
+      const sortedSessions = [...daySessions].sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+
       cells.push(
         <div key={`day-${day}`} className={`group min-h-[80px] sm:min-h-[120px] bg-white border-r border-b border-gray-100 p-1 sm:p-2 transition-colors hover:bg-gray-50 flex flex-col gap-1 relative ${isToday ? 'bg-blue-50/20' : ''}`}>
           
@@ -72,7 +74,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ sessions }) => {
           
           {/* Mobile Dots */}
           <div className="sm:hidden flex flex-wrap gap-1 mt-1 content-start pl-1">
-            {daySessions.map((s, i) => (
+            {sortedSessions.map((s, i) => (
                 <div key={i} className={`w-1.5 h-1.5 rounded-full ${
                     s.status === SessionStatus.PAID ? 'bg-green-500' :
                     s.status === SessionStatus.COMPLETED ? 'bg-amber-500' : 'bg-blue-500'
@@ -82,7 +84,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ sessions }) => {
 
           {/* Desktop List */}
           <div className="hidden sm:flex flex-col gap-1 mt-1 overflow-y-auto max-h-[80px]">
-            {daySessions.sort((a,b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()).map(session => (
+            {sortedSessions.map(session => (
               <div 
                 key={session.id}
                 title={`${session.studentName} - ${session.status}`}
