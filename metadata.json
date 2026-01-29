@@ -1,0 +1,5 @@
+{
+  "name": "TutorTrack AI",
+  "description": "A smart tuition tracking application for tutors to manage schedules, track payments, and visualize earnings. Features AI-powered natural language scheduling.",
+  "requestFramePermissions": []
+}
