@@ -4,7 +4,7 @@ import { Dashboard } from './components/Dashboard';
 import { ScheduleView } from './components/ScheduleView';
 import { CalendarView } from './components/CalendarView';
 import { SmartAddModal } from './components/SmartAddModal';
-import { getSessions, saveSession, seedDataIfEmpty, updateSession, deleteSession } from './services/storageService';
+import { fetchSessions, addSession, updateSession, removeSession } from './services/googleSheetsService';
 import { Session, SessionStatus } from './types';
 
 const App: React.FC = () => {
@@ -12,34 +12,43 @@ const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
     // Initial load
-    const loadData = () => {
-        seedDataIfEmpty();
-        setSessions(getSessions());
+    const loadData = async () => {
+        setLoading(true);
+        const data = await fetchSessions();
+        setSessions(data);
         setLoading(false);
     };
     loadData();
   }, []);
 
-  const handleAddSession = (newSession: Session) => {
-    const updatedList = saveSession(newSession);
+  const handleAddSession = async (newSession: Session) => {
+    setProcessing(true);
+    const updatedList = await addSession(newSession);
     setSessions(updatedList);
+    setProcessing(false);
   };
 
-  const handleStatusChange = (id: string, status: SessionStatus) => {
+  const handleStatusChange = async (id: string, status: SessionStatus) => {
     const session = sessions.find(s => s.id === id);
     if (session) {
-      const updatedList = updateSession({ ...session, status });
+      // Optimistic update (optional, but handling safe here)
+      // setProcessing(true); // Maybe dont block UI for status change
+      const updatedList = await updateSession({ ...session, status });
       setSessions(updatedList);
+      // setProcessing(false);
     }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
       if(window.confirm("Are you sure you want to delete this session?")) {
-        const updatedList = deleteSession(id);
+        setProcessing(true);
+        const updatedList = await removeSession(id);
         setSessions(updatedList);
+        setProcessing(false);
       }
   };
 
@@ -143,6 +152,14 @@ const App: React.FC = () => {
         onClose={() => setIsModalOpen(false)} 
         onSave={handleAddSession} 
       />
+      {processing && (
+        <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center">
+            <div className="bg-white p-4 rounded-lg shadow-lg flex items-center gap-3">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                <span className="text-gray-700 font-medium">Saving to Google Sheets...</span>
+            </div>
+        </div>
+      )}
     </div>
   );
 };
