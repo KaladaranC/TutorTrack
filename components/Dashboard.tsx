@@ -72,14 +72,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions }) => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard 
           title="Total Earnings" 
-          value={`$${stats.totalEarnings}`} 
+          value={`LKR ${stats.totalEarnings}`} 
           icon={<DollarSign className="text-green-600" size={20}/>}
           bg="bg-green-50"
           border="border-green-100"
         />
         <StatCard 
           title="Pending" 
-          value={`$${stats.pendingPayment}`} 
+          value={`LKR ${stats.pendingPayment}`} 
           icon={<TrendingUp className="text-amber-600" size={20}/>}
           bg="bg-amber-50"
           border="border-amber-100"
