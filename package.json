@@ -2,6 +2,7 @@
   "name": "tutortrack-ai",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://KaladaranC.github.io/TutorTrack",
   "type": "module",
   "scripts": {
     "dev": "vite",
