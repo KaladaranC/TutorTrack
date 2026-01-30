@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Session, SessionStatus } from '../types';
 import { StatusBadge } from './StatusBadge';
-import { Calendar, Clock, DollarSign, Trash2, CheckCircle, Search, Filter } from 'lucide-react';
+import { Calendar, Clock, DollarSign, Trash2, CheckCircle, Search, Filter, BadgeDollarSign } from 'lucide-react';
 
 interface ScheduleViewProps {
   sessions: Session[];
@@ -104,7 +104,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onStatusCh
                   <div className="text-sm text-gray-500 flex flex-wrap gap-x-4 gap-y-1">
                     <span className="flex items-center gap-1"><Clock size={14}/> {formatTime(session.startTime)} ({session.durationMinutes}m)</span>
                     <span className="flex items-center gap-1"><Calendar size={14}/> {session.subject}</span>
-                    <span className="flex items-center gap-1 font-medium text-gray-700"><DollarSign size={14}/> {session.rate}</span>
+                    <span className="flex items-center gap-1 font-medium text-gray-700"><BadgeDollarSign size={14}/> {session.rate}</span>
                   </div>
                   {session.notes && <p className="text-xs text-gray-400 mt-2 line-clamp-1 italic">"{session.notes}"</p>}
                 </div>

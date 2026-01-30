@@ -15,8 +15,6 @@ interface SmartAddModalProps {
 
 export const SmartAddModal: React.FC<SmartAddModalProps> = ({ isOpen, onClose, onSave }) => {
   const [mode, setMode] = useState<'manual' | 'ai'>('ai');
-  const [aiInput, setAiInput] = useState('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState('');
 
   // Manual Form State
@@ -31,32 +29,6 @@ export const SmartAddModal: React.FC<SmartAddModalProps> = ({ isOpen, onClose, o
   });
 
   if (!isOpen) return null;
-
-  const handleAiAnalyze = async () => {
-    if (!aiInput.trim()) return;
-    setIsAnalyzing(true);
-    setError('');
-
-    try {
-      const result = await parseScheduleWithAI(aiInput);
-      if (result) {
-        setFormData({
-            ...formData,
-            ...result,
-            status: SessionStatus.SCHEDULED,
-            // Ensure date is formatted for datetime-local input (YYYY-MM-DDTHH:mm)
-            startTime: result.startTime ? new Date(result.startTime).toISOString().slice(0, 16) : ''
-        });
-        setMode('manual'); // Switch to manual for review
-      } else {
-        setError('Could not understand the input. Please try again or use manual mode.');
-      }
-    } catch (e) {
-      setError('AI service unavailable. Please use manual entry.');
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,7 +51,6 @@ export const SmartAddModal: React.FC<SmartAddModalProps> = ({ isOpen, onClose, o
 
     onSave(newSession);
     // Reset
-    setAiInput('');
     setFormData({
         studentName: '',
         subject: '',
@@ -89,7 +60,6 @@ export const SmartAddModal: React.FC<SmartAddModalProps> = ({ isOpen, onClose, o
         status: SessionStatus.SCHEDULED,
         notes: ''
     });
-    setMode('ai');
     onClose();
   };
 
@@ -100,8 +70,8 @@ export const SmartAddModal: React.FC<SmartAddModalProps> = ({ isOpen, onClose, o
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold flex items-center gap-2">
-            {mode === 'ai' ? <Sparkles className="text-purple-600" size={20}/> : <Calendar className="text-blue-600" size={20}/>}
-            {mode === 'ai' ? 'Smart Schedule' : 'New Session'}
+            {<Calendar className="text-blue-600" size={20}/>}
+            {'New Session'}
           </h2>
           <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full transition-colors">
             <X size={20} className="text-gray-500" />
@@ -110,42 +80,7 @@ export const SmartAddModal: React.FC<SmartAddModalProps> = ({ isOpen, onClose, o
 
         {/* Content */}
         <div className="p-6 overflow-y-auto">
-          {mode === 'ai' ? (
-            <div className="space-y-4">
-              <p className="text-sm text-gray-600">
-                Describe the session naturally. For example: <br/>
-                <span className="italic text-gray-400">"Chemistry with Alex tomorrow at 5pm for $40"</span>
-              </p>
-              
-              <textarea
-                value={aiInput}
-                onChange={(e) => setAiInput(e.target.value)}
-                placeholder="Type here..."
-                className="w-full p-4 rounded-xl border-2 border-purple-100 focus:border-purple-500 focus:ring-0 resize-none h-32 text-gray-800 placeholder:text-gray-300 transition-colors"
-                autoFocus
-              />
-
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-
-              <div className="flex gap-3 pt-2">
-                 <button 
-                  onClick={() => setMode('manual')}
-                  className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-600 font-medium hover:bg-gray-50 transition-colors"
-                >
-                  Manual Entry
-                </button>
-                <button 
-                  onClick={handleAiAnalyze}
-                  disabled={!aiInput.trim() || isAnalyzing}
-                  className="flex-1 px-4 py-2.5 rounded-lg bg-purple-600 text-white font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-                >
-                  {isAnalyzing ? <Loader2 className="animate-spin" size={18}/> : <Sparkles size={18}/>}
-                  {isAnalyzing ? 'Analyzing...' : 'Auto-Fill'}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <form id="session-form" onSubmit={handleSave} className="space-y-4">
+          <form id="session-form" onSubmit={handleSave} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-xs font-semibold text-gray-500 uppercase">Student Name</label>
@@ -193,7 +128,7 @@ export const SmartAddModal: React.FC<SmartAddModalProps> = ({ isOpen, onClose, o
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-gray-500 uppercase">Rate ($)</label>
+                  <label className="text-xs font-semibold text-gray-500 uppercase">Rate (lkr)</label>
                   <input 
                     type="number" 
                     required
@@ -217,10 +152,10 @@ export const SmartAddModal: React.FC<SmartAddModalProps> = ({ isOpen, onClose, o
                 <div className="flex justify-end gap-2 pt-2">
                    <button 
                     type="button"
-                    onClick={() => setMode('ai')}
+                    onClick={() => onClose()}
                     className="px-4 py-2 rounded-lg text-sm text-gray-500 hover:text-gray-700 font-medium"
                   >
-                    Back to AI
+                    Back
                   </button>
                   <button 
                     type="submit"
@@ -230,7 +165,6 @@ export const SmartAddModal: React.FC<SmartAddModalProps> = ({ isOpen, onClose, o
                   </button>
                 </div>
             </form>
-          )}
         </div>
       </div>
     </div>

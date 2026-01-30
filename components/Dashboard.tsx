@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Session, SessionStatus } from '../types';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis } from 'recharts';
-import { DollarSign, Clock, Users, TrendingUp } from 'lucide-react';
+import { DollarSign, Clock, Users, TrendingUp, BadgeDollarSign } from 'lucide-react';
 
 interface DashboardProps {
   sessions: Session[];
@@ -73,7 +73,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ sessions }) => {
         <StatCard 
           title="Total Earnings" 
           value={`LKR ${stats.totalEarnings}`} 
-          icon={<DollarSign className="text-green-600" size={20}/>}
+          icon={<BadgeDollarSign className="text-green-600" size={20}/>}
           bg="bg-green-50"
           border="border-green-100"
         />
